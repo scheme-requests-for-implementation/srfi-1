@@ -384,7 +384,7 @@
 (define (null-list? l)
   (cond ((pair? l) #f)
 	((null? l) #t)
-	(else (error "null-pair?: argument out of domain" l))))
+	(else (error "null-list?: argument out of domain" l))))
            
 
 (define (list= = . lists)
