@@ -18,17 +18,14 @@ List Library
 Olin Shivers
 
 </UL><H1>Status</H1><UL>
-This SRFI is currently in ``draft'' status.  To see an explanation of each status that a SRFI can hold, see <A HREF="http://srfi.schemers.org/srfi-process.html">here</A>.
-It will remain in draft status until 1999/02/22 (extended to 1999/03/09), or as amended.
-To provide input on this SRFI, please <code><A
-HREF="mailto:srfi-1@srfi.schemers.org">mail to
-&lt;srfi-1@srfi.schemers.org&gt;</A></code>.  See <A HREF=../srfi-list-subscribe.html>instructions here</A> to subscribe to the list.  You can access previous messages via <A HREF=mail-archive/maillist.html>the archive of the mailing list</A>.
+This SRFI is currently in ``final status.  To see an explanation of each status that a SRFI can hold, see <A HREF="http://srfi.schemers.org/srfi-process.html">here</A>.
+You can access the discussion on this SRFI via <A HREF=mail-archive/maillist.html>the archive of the mailing list</A>.
 <P><UL>
-<LI>Received: 1998/11/7
-<LI>Draft: 1998/12/22-1999/03/09
+	  <LI>Received: 1998/11/7
+	  <LI>Draft: 1998/12/22-1999/03/09
+	  <LI>Revised: Several times
+	  <LI>Final: 1999/10/09
 </UL>
-<P>This draft SRFI includes an "Issues" section, whose contents should be
-resolved before this proposal is accepted as a final SRFI.
 
 </UL><H1>Abstract</H1><UL>
 
@@ -145,63 +142,6 @@ The remaining R4RS/R5RS list-processing procedure is not included:
 <UL>
   <CODE>list-tail</CODE> (see DROP)
 </UL>
-
-</UL><H1>Issues</H1><UL>
-The design of the library has several issues that deserve discussion.
-
-<OL>
-<LI>Should the alist functions be placed in a separate library? They are:
-<UL><CODE>
-    assoc assq assv ass
-    acons alist-copy
-    alist-delete  del-ass  del-assq  del-assv  del-assoc
-    alist-delete! del-ass! del-assq! del-assv! del-assoc!
-</CODE></UL>
-<LI>Argument order
-    The ones you might challenge are
-<DL>
-<DT><CODE>LIST-TABULATE n proc</CODE>
-<DD>	    This is the order used by the ML community for their ...-tabulate
-	    procedures.
-<DT><CODE>TAKE lis i</CODE>  (and <CODE>TAKE! DROP DROP!</CODE>)
-<DD>        This order can be argued on the grounds of similarity to
-	    array indexing -- or the general T convention of aggregate object
-	    first, then accessor parameters.
-</DL>	
-<LI>When do n-ary mapping functions (MAP, MAP!, FOR-EACH, PAIR-FOR-EACH,
-APPEND-MAP, APPEND-MAP!, FILTER-MAP, MAP-IN-ORDER) terminate?
-<OL>
-<LI>When any list runs out?
-<LI>When the first list runs out?
-<LI>All lists must be of equal length?
-</OL>
-My preferences are in the order listed. R4RS says #3. Hence this spec
-requires #1. Any changes to this *must* happen by the end of the SRFI
-discussion period.
-
-<LI>Is <CODE>FIND-TAIL</CODE>'s predicate applied to the pairs of its list, or the
-elements? I have chosen the latter, as I believe only extremely rare
-cases would want the actual sublist, and this complicates the other,
-vast majority of the uses by requiring the client to compose CAR in
-front of the actual element predicate.
-
-<LI>Are the right-duplicate deletion procedures worth inclusion? They are O(n^2)
-algorithms, hence expensive for long lists.
-
-<LI>Should my lists-as-sets library be folded in with this library or kept
-separate? The SRFI review discussion should determine this.
-
-<LI>Kelsey points out that <CODE>LIST*</CODE> doesn't necessarily return a list, so it's
-a poor name. Alternate names are <CODE>CONS*</CODE> or <CODE>NCONS</CODE>.
-
-<LI>Should we provide both reliably-destructive and linear-update (potentially
-destructive) procedure variants? It really imposes no *implementation*
-overhead to do so -- typically, one simply defines the linear-update name
-to be either the destructive or pure-functional procedure. We would need
-a naming convention for linear-update functions -- perhaps a terminal <CODE>+</CODE>,
-e.g.
-    <CODE>APPEND APPEND! APPEND+</CODE>
-</OL>
 
 </UL><H1>Rationale</H1><UL>
 
@@ -1266,10 +1206,10 @@ RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
 PARTICULAR PURPOSE.
 </UL>
     <hr>
-    <address>Editor: <a href="mailto:srfi-editors@schemers.org">Dave Mason</a></address>
+    <address>Editor: <a href="mailto:srfi-editors@srfi.schemers.org">Dave Mason</a></address>
 <!-- Created: Tue Sep 29 19:20:08 EDT 1998 -->
 <!-- hhmts start -->
-Last modified: Thu Feb 25 09:28:03 EST 1999
+Last modified: Sat Oct  9 17:38:40 EDT 1999
 <!-- hhmts end -->
   </body>
 </html>
