@@ -1,0 +1,1275 @@
+<!-- X-URL: http://sarg.ryerson.ca/srfi/srfi-template.html -->
+<!-- Date: Sun, 20 Dec 1998 15:49:20 GMT -->
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>SRFI-1: List Library</title>
+  </head>
+
+  <body>
+
+<H1>Title</H1><UL>
+
+SRFI-1: List Library
+
+</UL><H1>Author</H1><UL>
+
+Olin Shivers
+
+</UL><H1>Status</H1><UL>
+This SRFI is currently in ``draft'' status.  To see an explanation of each status that a SRFI can hold, see <A HREF="http://srfi.schemers.org/srfi-process.html">here</A>.
+It will remain in draft status until 1999/02/22, or as amended.
+To provide input on this SRFI, please <A
+HREF="mailto:srfi-1@srfi.schemers.org">mail to
+&lt;srfi-1@srfi.schemers.org&gt;</A>.  There is also <A HREF=mail-archive/maillist.html>an archive of the mailing list</A>.
+<P><UL>
+<LI>Received: 1998/11/7
+<LI>Draft: 1998/12/22-1999/02/22
+</UL>
+<P>This draft SRFI includes an "Issues" section, whose contents should be
+resolved before this proposal is accepted as a final SRFI.
+
+</UL><H1>Abstract</H1><UL>
+
+R5RS Scheme has an impoverished set of list-processing utilities, which is a
+problem for authors of portable code.  This SRFI proposes a coherent and
+comprehensive set of list-processing procedures; it is accompanied by a
+reference implementation of this the spec. The reference implementation is
+<UL>
+<LI>portable
+<LI>very efficient
+<LI>completely open, public-domain source
+</UL>
+
+
+I have for some time now been dissatisfied by the set of basic list and
+pair operations provided by R4RS/R5RS Scheme. Because this set is so small
+and basic, most implementations provide additional utilities, such as a
+list-filtering function, or a "left fold" operator, and so forth. But, 
+of course, this introduces incompatibilities -- different Scheme
+implementations provide different sets of procedures.
+<p>
+I have designed a full-featured library of procedures for list processing.
+While putting this library together, I checked as many Schemes as I could get
+my hands on. (I have a fair amount of experience with several of these
+already.) I missed Chez -- no on-line manual that I can find -- but I hit most
+of the other big, full-featured Schemes. The complete list of list-processing
+systems I checked is:
+<UL>
+    R4RS/R5RS Scheme, MIT Scheme, Gambit, RScheme, MzScheme, slib, Common
+    Lisp, Bigloo, guile, T, APL and the SML standard basis
+</UL>
+As a result, the library I am proposing is fairly rich.
+<p>
+In parallel with designing this API, I have also written a reference
+implementation. I will place this implementation in the public domain
+after the discussion and review associated with the SRFI process has
+converged. The entire source of the reference implementation is appended 
+to this document for the benefit of public review. A few notes about the
+reference implementation:
+
+<UL>
+<LI>Although I got procedure names and specs from many Schemes, I wrote this
+    code myself.  Thus, there are *no* entanglements. Any Scheme implementor
+    can pick this library up with no worries about copyright problems -- both
+    commercial and non-commercial systems.
+
+<LI>The code is written for portability and should be trivial to port to
+    any Scheme. It has only two deviations from R4RS, clearly discussed
+    in the comments:
+<UL>
+<LI>One call to an ERROR procedure;
+<LI>The PARTITION and PARTITION! procedures return multiple values,
+          and thus make use of the R5RS CALL-WITH-VALUES and VALUES procedures.
+</UL>
+<LI>It is written for clarity and well-commented. The current source is
+    912 lines of code, of which 277 are comments.
+
+<LI>It is written for efficiency. Fast paths are provided for common
+    cases. Side-effecting procedures such as FILTER! avoid unnecessary,
+    redundant SET-CDR!s which would thrash a generational GC's write barrier
+    and the store buffers of fast processors. Functions reuse longest common
+    tails from input parameters to construct their results where
+    possible. Constant-space iterations are used in preference to recursions;
+    local recursions are used in preference to consing temporary intermediate
+    data structures.
+<p>
+    This is not to say that the implementation can't be tuned up for
+    a specific Scheme implementation. There are notes in comments addressing
+    ways implementors can tune the reference implementation for performance.
+</UL>
+<p>
+In short, I've written the reference implementation to make it as painless
+as possible for an implementor -- or a regular programmer -- to adopt this
+library and get good results with it.
+<p>
+Here is a short list of the procedures provided by the list-lib package:
+<CODE><UL>
+   xcons tree-copy make-list list-tabulate list* list-copy circular-list
+   .iota iota.
+   first second third fourth fifth sixth seventh eighth ninth tenth
+   zip unzip2 unzip3 unzip4 unzip5
+   take drop take! drop! last last-pair
+   append! reverse-append reverse-append!
+   unfold unfold/tail foldl foldr pair-foldl pair-foldr reducel reducer
+   append-map append-map! map! pair-for-each filter-map map-in-order
+   filter  partition  remove
+   filter! partition! remove! 
+   find find-tail any every list-index
+   del  delq  delv  delete 
+   del! delq! delv! delete!
+   mem ass acons alist-copy
+   delq-duplicates  delv-duplicates  delete-duplicates  del-duplicates 
+   delq-duplicates! delv-duplicates! delete-duplicates! del-duplicates!
+   alist-delete  del-ass  del-assq  del-assv  del-assoc
+   alist-delete! del-ass! del-assq! del-assv! del-assoc!
+   reverse!
+</ul></CODE>
+<p>
+The following R4RS/R5RS list- and pair-processing procedures are also part of
+list-lib's exports, as defined by the R4RS report:
+<CODE><ul>    
+  cons pair? null? list? list length append reverse
+  car cdr ... cdddar cddddr set-car! set-cdr! list-ref
+  member memq memv assoc assq assv
+  map for-each
+</UL></CODE>
+<p>
+I follow the general Scheme convention (vector-length, string-ref) of
+placing the type-name before the action when naming procedures -- so
+we have LIST-COPY, TREE-COPY, PAIR-FOR-EACH rather than the perhaps
+more fluid, but less consistent, COPY-LIST, COPY-TREE, or FOR-EACH-PAIR.
+<p>
+The remaining R4RS/R5RS list-processing procedure is not included: 
+<UL>
+  <CODE>list-tail</CODE> (see DROP)
+</UL>
+
+</UL><H1>Issues</H1><UL>
+The design of the library has several issues that deserve discussion.
+
+<OL>
+<LI>Should the alist functions be placed in a separate library? They are:
+<UL><CODE>
+    assoc assq assv ass
+    acons alist-copy
+    alist-delete  del-ass  del-assq  del-assv  del-assoc
+    alist-delete! del-ass! del-assq! del-assv! del-assoc!
+</CODE></UL>
+<LI>Argument order
+    The ones you might challenge are
+<DL>
+<DT><CODE>LIST-TABULATE n proc</CODE>
+<DD>	    This is the order used by the ML community for their ...-tabulate
+	    procedures.
+<DT><CODE>TAKE lis i</CODE>  (and <CODE>TAKE! DROP DROP!</CODE>)
+<DD>        This order can be argued on the grounds of similarity to
+	    array indexing -- or the general T convention of aggregate object
+	    first, then accessor parameters.
+</DL>	
+<LI>When do n-ary mapping functions (MAP, MAP!, FOR-EACH, PAIR-FOR-EACH,
+APPEND-MAP, APPEND-MAP!, FILTER-MAP, MAP-IN-ORDER) terminate?
+<OL>
+<LI>When any list runs out?
+<LI>When the first list runs out?
+<LI>All lists must be of equal length?
+</OL>
+My preferences are in the order listed. R4RS says #3. Hence this spec
+requires #1. Any changes to this *must* happen by the end of the SRFI
+discussion period.
+
+<LI>Is <CODE>FIND-TAIL</CODE>'s predicate applied to the pairs of its list, or the
+elements? I have chosen the latter, as I believe only extremely rare
+cases would want the actual sublist, and this complicates the other,
+vast majority of the uses by requiring the client to compose CAR in
+front of the actual element predicate.
+
+<LI>Are the right-duplicate deletion procedures worth inclusion? They are O(n^2)
+algorithms, hence expensive for long lists.
+
+<LI>Should my lists-as-sets library be folded in with this library or kept
+separate? The SRFI review discussion should determine this.
+
+<LI>Kelsey points out that <CODE>LIST*</CODE> doesn't necessarily return a list, so it's
+a poor name. Alternate names are <CODE>CONS*</CODE> or <CODE>NCONS</CODE>.
+
+<LI>Should we provide both reliably-destructive and linear-update (potentially
+destructive) procedure variants? It really imposes no *implementation*
+overhead to do so -- typically, one simply defines the linear-update name
+to be either the destructive or pure-functional procedure. We would need
+a naming convention for linear-update functions -- perhaps a terminal <CODE>+</CODE>,
+e.g.
+    <CODE>APPEND APPEND! APPEND+</CODE>
+</OL>
+
+</UL><H1>Rationale</H1><UL>
+
+A set of general criteria guided the design of this library.
+<p>
+I don't require "destructive" (what I call "linear update") procedures to
+alter and recycle cons cells from the argument lists. They are allowed to, but
+not required to. (And the reference implementations I have written *do* recycle
+the argument lists.)
+<p>
+List-filtering procedures such as FILTER or DELETE do not disorder
+lists. Elements appear in the answer list in the same order as they appear in
+the argument list. This constrains implementation, but seems like a desirable
+feature, since in many uses of lists, order matters.  (In particular,
+disordering an alist is definitely a bad idea.)
+<p>
+Contrariwise, although my reference implementations of the list-filtering
+procedures share longest common tails between argument and answer lists,
+it not is part of the spec.
+<p>
+Because lists are an inherently sequential data structure (unlike, say,
+vectors), list-inspection functions such as FIND, FIND-TAIL, FOR-EACH, ANY
+and EVERY commit to a left-to-right traversal order of their argument list.
+<p>
+However, constructor functions, such as LIST-TABULATE and the mapping
+procedures (APPEND-MAP, APPEND-MAP!, MAP!, PAIR-FOR-EACH, FILTER-MAP,
+MAP-IN-ORDER), do *not* specify the dynamic order in which their procedural
+argument is applied to its various values.
+<p>
+Predicates return useful true values wherever possible.  Thus ANY must return
+the true value produced by its predicate, and EVERY  returns the final true
+value produced by applying its predicate argument to the last element of its
+argument list.
+<p>
+Functionality provided both in pure and linear-update (potentially
+destructive) forms wherever this makes sense.
+<p>
+No special status accorded Scheme's built-in equality functions.
+Any functionality provided in terms of EQ?, EQV?, EQUAL? is also
+available using a client-provided equality function.
+<p>
+I left out sorting not because it isn't important, but because I figured
+it should go in its own library (and I will be submitting a sorting SRFI
+proposal in the near future).
+<p>
+Proper design counts for more than backwards compatibility, but I have tried,
+ceteras paribus, to be as backwards-compatible as possible with existing
+list-processing libraries, in order to facilitate porting old code to run as a
+client of the procedures in this library. Name choices and semantics are, for
+the most part, in agreement with existing practice in many current Scheme
+systems. I have indicated some incompatibilities in the following text.
+<p>
+These procedures are *not* "sequence generic" -- i.e., procedures that
+operate on either vectors and lists. They are list-specific. I prefer to
+keep the library simple and focussed.
+<p>
+I have named these procedures without a qualifying initial "list-" lexeme,
+which is in keeping with the existing set of list-processing utilities in
+Scheme.
+
+
+
+<H3>"Linear update" procedures</H3>
+
+Many procedures in this library have "pure" and "linear update" variants.  A
+"pure" procedure has no side-effects, and in particular does not alter its
+arguments in any way. A "linear update" procedure is allowed -- but *not*
+required -- to side-effect its arguments in order to construct its
+result. "Linear update" procedures are typically given names ending with an
+exclamation point. So, for example, (APPEND! list1 list2) is allowed to
+construct its result by simply using SET-CDR! to set the cdr of the last pair
+of list1 to point to list2, and then returning list1 (unless list1 is the
+empty list, in which case it would simply return list2). However, APPEND! may
+also elect to perform a pure append operation -- this is a legal definition
+of <CODE>APPEND!</CODE>:
+<pre>
+    (define append! append)
+</PRE>
+This is why we do not call these procedures "destructive" -- because they
+aren't *required* to be destructive. They are *potentially* destructive.
+<P>
+What this means is that you may only apply linear-update procedures to
+values that you know are "dead" -- values that will never be used again
+in your program. This must be so, since you can't rely on the value passed
+to a linear-update procedure after that procedure has been called. It
+might be unchanged; it might be altered.
+<P>
+The "linear" in "linear update" doesn't mean "linear time" or "linear space"
+or any sort of multiple-of-n kind of meaning. It's a fancy term that
+pointy-headed type theorists and pure functional programmers use to describe
+systems where you are only allowed to have exactly one reference to each
+variable. This provides a guarantee that the value bound to a variable is
+bound to no other variable. So when you *use* a variable in a variable
+reference, you "use it up." Knowing that no one else has a pointer to that
+value means the a system primitive is free to side-effect its arguments to
+produce what is, observationally, a pure-functional result.
+<P>
+In the context of this library, "linear update" means you, the programmer,
+know there are *no other* live references to the value passed to the
+procedure -- after passing the value to one of these procedures, the
+value of the old pointer is indeterminate. Basically, you are licensing
+the Scheme implementation to alter the data structure if it feels like
+it -- you have declared you don't care either way.
+<P>
+You get no help from Scheme in checking that the values you claim are "linear"
+really are. So you better get it right. Or play it safe and use the non-!
+procedures -- doesn't do any good to compute quickly if you get the wrong
+answer.
+<P>
+Why go to all this trouble to define the notion of "linear update" and use it
+in a procedure spec, instead of the more common notion of a "destructive"
+operation?  First, note that destructive list-processing procedures are almost
+always used in a linear-update fashion. This is in part required by the
+special case of operating upon the empty list, which can't be side-effected.
+This means that destructive operators are not pure side-effects -- they have
+to return a result. Second, note that code written using linear-update
+operators can be trivially ported to a pure, functional subset of Scheme by
+simply providing pure implementations of the linear-update operators. Finally,
+requiring destructive side-effects ruins opportunities to parallelise these
+operations -- and the places where one has taken the trouble to spell out
+destructive operations are usually exactly the code one would want a
+parallelising compiler to parallelise: the efficiency-critical kernels of the
+algorithm.  Linear-update operations are easily parallelised. Going with a
+linear-update spec doesn't close off these valuable alternative implementation
+techniques. This list library is intended as a set of low-level, basic
+operators, so we don't want to exclude these possible implementations.
+<P>
+The linear-update procedures in this library are
+<UL><CODE>   take! drop! 
+   append! reverse-append!
+   append-map! map!
+   filter! partition! remove! 
+   del! delq! delv! delete!
+   alist-delete! del-ass! del-assq! del-assv! del-assoc!
+   delq-duplicates! delv-duplicates! delete-duplicates! del-duplicates!
+   reverse!
+</CODE></UL>
+
+
+<H3>Not included in this library</H3>
+The following items are not in this library:
+<UL>
+<LI>Sort routines
+<LI>Procedures supporting lists-as-sets operations
+<LI>Destructuring/pattern-matching macro
+</UL>
+They deserve their own SRFI specs. I have three written proposals for the
+first two of these items (sorting, and two lists-as-sets packages) that
+I will be submitting shortly as SRFI proposals. 
+<p>
+One might argue that the lists-as-sets procedures should be part of this
+library.
+
+
+
+</UL><H1>Specification</H1><UL>
+<H3>Constructors</H3><DL>
+
+<DT><PRE>
+xcons d a -&gt; pair
+</PRE><DD>
+<PRE>
+    (lambda (d a) (cons a d))
+</PRE>
+    Of utility only as a value to be conveniently passed to higher-order 
+    procedures.
+
+<PRE>
+    (xcons '(b c) 'a) =&gt; (a b c)
+</PRE>
+
+    The name stands for "eXchanged <CODE>CONS</CODE>." A possible alternative name is
+    "rcons." But this is not a super-important issue.
+
+<DT><PRE>
+tree-copy object -&gt; object
+</PRE><DD>
+    Recursively copies the list structure in <CODE>OBJECT</CODE>, stopping at non-pair
+    leaves. (<CODE>LIST-COPY</CODE> does a "shallow" copy.)
+
+<DT><PRE>
+make-list n [fill] -&gt; list
+</PRE><DD>
+    Returns an N-element list, whose elements are all the value <CODE>FILL</CODE>, which
+    defaults to <CODE>#f</CODE>.
+
+<PRE>
+    (make-list 4 'c) =&gt; (c c c c)
+</PRE>
+
+<DT><PRE>
+list-tabulate n init-proc -&gt; list
+</PRE><DD>
+    Returns an N-element list. Element i of the list, where 0 &lt;= i &lt; N,
+    is produced by <CODE>(INIT-PROC i)</CODE>. No guarantee is made about the dynamic
+    order in which <CODE>INIT-PROC</CODE> is applied to these indices.
+
+<PRE>
+    (list-tabulate 4 values) =&gt; (0 1 2 3)
+</PRE>
+
+<DT><PRE>
+.iota to           -&gt; list
+.iota from to      -&gt; list
+.iota from to step -&gt; list
+
+iota. to           -&gt; list
+iota. from to      -&gt; list
+iota. from to step -&gt; list
+</PRE><DD>
+
+    Produce simple integer sequences over a half-open interval.
+    <CODE>FROM</CODE>, <CODE>TO</CODE>, and <CODE>STEP</CODE> are numbers (that is, not necessarily integers).
+    <CODE>FROM</CODE> defaults to 0; <CODE>STEP</CODE> defaults to 1.
+<p>
+    In the simple one-argument, integer case,
+<UL>
+        <CODE>(.IOTA N)</CODE> returns the N-element list <CODE>(0 1 2 ... n-1)</CODE>;<BR>
+        <CODE>(IOTA. N)</CODE> returns the N-element list <CODE>(1 2 ... n)</CODE>.
+</UL>    
+    In general, these procedures return the list whose elements are
+    of the form 
+<UL>
+	<CODE>FROM</CODE> + i * <CODE>STEP</CODE>
+</UL>
+    where
+<UL>
+	0 &lt;= i &lt;  ceiling((<CODE>TO</CODE>-<CODE>FROM</CODE>)/<CODE>STEP</CODE>)	(<CODE>.IOTA</CODE>)<BR>
+	0 &lt;  i &lt;= floor((<CODE>TO</CODE>-<CODE>FROM</CODE>)/<CODE>STEP</CODE>)		(<CODE>IOTA.</CODE>)
+</UL>
+
+    These procedures are a generalisation of the APL primitive 
+    of the same name.
+
+<PRE>
+    (.iota 9)      =&gt; 0 1 2 3 4 5 6 7 8
+    (.iota 3 9)    =&gt; 3 4 5 6 7 8
+    (.iota 3 9 2)  =&gt; 3 5 7
+    (.iota 3 10 2) =&gt; 3 5 7 9
+
+    (iota. 9)      =&gt; 1 2 3 4 5 6 7 8 9
+    (iota. 3 9)    =&gt; 4 5 6 7 8 9
+    (iota. 3 9 2)  =&gt; 5 7 9
+    (iota. 3 10 2) =&gt; 5 7 9
+
+    (.iota 10 3 -2) =&gt; (10 8 6 4)
+    (iota. 10 3 -2) =&gt; (8 6 4)
+</PRE>
+
+<DT><PRE>
+list* elt1 elt2 ... -&gt; object
+</PRE><DD>
+    Like <CODE>LIST</CODE>, but the last argument provides the tail of the constructed
+    list -- i.e., <CODE>(list* a1 a2 ... an) = (cons a1 (cons a2 (cons ... an)))</CODE>.
+    This function is called <CODE>LIST*</CODE> in about half of the Schemes that
+    provide it; and <CODE>CONS*</CODE> in the other half. Common Lisp calls it <CODE>LIST*</CODE>,
+    which is why I went with this choice.
+
+<PRE>
+    (list* 1 2 3 4) =&gt; (1 2 3 . 4)
+    (list* 1) =&gt; 1
+</PRE>
+
+<DT><PRE>
+circular-list elt1 elt2 ... -&gt; list
+</PRE><DD>
+    Constructs a circular list of the elements.
+<PRE>
+    (circular-list 'z 'q) =&gt; (z q z q z q ...)
+</PRE>
+
+<DT><PRE>
+list-copy list -&gt; list
+</PRE><DD>
+    Copies the spine of the argument. (<CODE>TREE-COPY</CODE> does a deep copy.)
+<PRE>
+    (lambda (lis) (map values lis))
+</PRE>
+
+<DT><PRE>
+zip list1 list2 ... -&gt; list
+</PRE><DD>
+<PRE>    (lambda lists (apply map list lists))
+</PRE>
+    If ZIP is passed N lists, it returns a list as long as the shortest
+    of these lists, each element of which is an N-element list comprised
+    of the corresponding elements from the parameter lists.
+
+<PRE>
+    (zip '(one two three) '(1 2 3) '(odd even odd even odd even odd even)) =&gt;
+       ((one 1 odd) (two 2 even) (three 3 odd))
+
+    (zip '(1 2 3)) =&gt; ((1) (2) (3))
+</PRE>
+
+</DL><H3>Selectors</H3><DL>
+
+
+<DT><PRE>
+first second third fourth fifth 
+sixth seventh eighth ninth tenth: pair -&gt; object
+</PRE><DD>
+    Synonyms for <CODE>car</CODE>, <CODE>cadr</CODE>, <CODE>caddr</CODE>, ... 
+
+<PRE>
+    (third '(a b c d e)) =&gt; c
+</PRE>
+
+<DT><PRE>
+take  list i -&gt; list
+take! list i -&gt; list
+drop  list i -&gt; list
+drop! list i -&gt; list
+</PRE><DD>
+    If I &gt;= 0, TAKE returns the first I elements of LIST.<BR>
+    If I &lt;= 0, TAKE returns the last  I elements of LIST.
+<p>
+    If I &gt;= 0, DROP returns all but the first I elements of LIST.<BR>
+    If I &lt;= 0, DROP returns all but the last  I elements of LIST.
+<p>
+    The returned list may share a common tail with the argument list.
+<p>
+    TAKE! and DROP! are "linear-update" variants: the procedure is
+    allowed, but not required, to alter the argument list to produce the
+    result.
+
+<PRE>
+    (take '(a b c d e)  2) =&gt; (a b)
+    (take '(a b c d e) -2) =&gt; (d e)
+    (drop '(a b c d e)  2) =&gt; (c d e)
+    (drop '(a b c d e) -2) =&gt; (a b c)
+</PRE>
+
+
+<DT><PRE>
+last pair -&gt; value
+last-pair pair -&gt; pair
+</PRE><DD>
+    LAST returns the last element of the non-empty list PAIR.
+    LAST-PAIR returns the last pair in the non-empty list PAIR.
+
+<PRE>
+    (last '(a b c)) =&gt; c
+    (last-pair '(a b c)) =&gt; (c)
+</PRE>
+
+<DT><PRE>
+unzip2 list -&gt; [list list]
+unzip3 list -&gt; [list list list]
+unzip4 list -&gt; [list list list list]
+unzip5 list -&gt; [list list list list list]
+</PRE><DD>
+    UNZIP2 takes a list of lists, where every list must contain at least
+    two elements, and returns two values: a list of the first elements,
+    and a list of the second elements. UNZIP3 does the same for the first
+    three elements of the lists, and so forth.
+
+<PRE>
+    (unzip2 '(1 one) (2 two) (3 three)) =&gt;
+	(1 2 3) 
+        (one two three)
+</PRE>
+
+
+</DL><H3>Append &amp; reverse</H3><DL>
+
+
+<DT><PRE>
+append! list1 ... -&gt; list
+</PRE><DD>
+    A "linear-update" variant of APPEND -- this procedure is allowed, but
+    not required, to alter cons cells in the argument lists to construct
+    the result list. The *last* parameter is never altered; the result
+    list may or may not share structure with this parameter.
+
+<DT><PRE>
+reverse-append  rev-head tail -&gt; list
+reverse-append! rev-head tail -&gt; list
+</PRE><DD>
+    REVERSE-APPEND is just
+<PRE>
+    (lambda (rev-head tail) (append (reverse rev-head) tail))
+</PRE>
+    It it provided because it is a common operation -- a common
+    list-processing style calls for this exact operation to transfer values
+    accumulated in reverse order onto the front of another list, and because
+    the implementation is significantly more efficient than the simple
+    composition it replaces. (But note that this pattern of iterative 
+    computation followed by a reverse can frequently be rewritten as a 
+    recursion, dispensing with the REVERSE and REVERSE-APPEND steps, and 
+    shifting temporary, intermediate storage from the heap to the stack, 
+    which is typically a win for reasons of cache locality and eager storage 
+    reclamation.)
+<p>
+    REVERSE-APPEND! is just the linear-update variant -- it is allowed, but
+    not required, to alter REV-HEAD's cons cells to construct the result.
+
+<DT><PRE>
+reverse! list -&gt; list
+</PRE><DD>
+    Linear-update variant of reverse. Is permitted, but not required,
+    to alter the argument's cons cells to produce the reversed list.
+
+
+</DL><H3>Fold, unfold, and map</H3><DL>
+
+
+<DT><PRE>
+unfold p f g seed -&gt; list
+</PRE><DD>
+    UNFOLD is best described by its basic recursion:
+<PRE>
+    (unfold p f g seed) = (if (p seed) '() 
+                              (cons (f seed)
+                                    (unfold p f g (g seed))))
+</PRE>
+    P: Determines when to stop unfolding.
+    F: Maps each seed value to the corresponding list element.
+    G: Maps each seed value to next seed value.
+    SEED: The "state" value for the unfold.
+<p>
+    UNFOLD is a fundamental list constructor, just as FOLDL and FOLDR
+    are fundamental list consumers. While UNFOLD may seem a bit abstract
+    to novice functional programmers, it can be used in a number of ways:
+
+<PRE>
+    (unfold (lambda (x) (= x 10))	; The first 10 squares.
+	    (lambda (x) (* x x))
+	    (lambda (x) (+ x 1))
+		0)
+		
+    (unfold null? car cdr lis) ; Copy a proper list
+</PRE>
+
+
+<DT><PRE>
+unfold/tail p f g e seed -&gt; list
+</PRE><DD>
+    UNFOLD/TAIL allows you to specify the value to use when
+    the recursion terminates. I.e.
+<PRE>
+    (unfold/tail p f g e seed) = (if (p seed) (e seed)
+                                     (cons (f seed)
+					       (unfold p f g (g seed))))
+    
+    ;;; Copy a possibly non-proper list:
+    (unfold/tail (lambda (x) (not (pair? x))) car cdr values lis)
+    
+    ;;; Append HEAD onto TAIL:
+    (unfold/tail null? car cdr (lambda (x) tail) head)
+</PRE>
+
+<DT><PRE>
+foldl kons knil list1 list2 ... -&gt; value
+</PRE><DD>
+    The fundamental list iterator. 
+<p>
+    First, consider the single list-parameter case. If LIST1 = (e1 e2 ... en),
+    then this procedure returns
+<PRE>
+    (kons en ... (kons e2 (kons e1 knil)) ... )
+</PRE>
+    That is, it obeys the (tail) recursion
+<PRE>
+    (foldl kons knil lis) = (foldl kons (kons (car lis) knil) (cdr lis))
+    (foldl kons knil '()) = knil
+</PRE>
+
+    Examples:
+<PRE>
+    (foldl + 0 lis)			; Add up the elements of LIS.
+
+    (foldl cons '() lis)		; Reverse LIS.
+    
+    (foldl cons tail rev-head)	; See REVERSE-APPEND.
+    
+    ;; How many symbols in LIS?
+    (foldl (lambda (x count) (if (symbol? x) (+ count 1) count))
+	       0
+               lis)
+    
+    ;; Length of the longest string in LIS:
+    (foldl (lambda (s max-len) (max max-len (string-length s)))
+	       0
+               lis)
+</PRE>
+
+    If N list arguments are provided, then the KONS function must take
+    N+1 parameters: one element from each list, and the "seed" or fold
+    state, which is initially KNIL. The fold operation terminates when
+    the shortest list runs out of values:
+<PRE>
+    (foldl list* '() '(a b c) '(1 2 3 4 5)) =&gt; (c 3 b 2 a 1)
+</PRE>
+
+<DT><PRE>
+foldr kons knil list1 list2 ... -&gt; value
+</PRE><DD>
+    The fundamental list recursion operator. 
+<p>
+    First, consider the single list-parameter case. If LIST1 = (e1 e2 ... en), 
+    then this procedure returns
+<PRE>
+    (kons e1 (kons e2 ... (kons en knil)))
+</PRE>
+    That is, it obeys the recursion
+<PRE>
+    (foldr kons knil lis) = (kons (car lis) (foldr kons knil (cdr lis)))
+    (foldr kons knil '()) = knil
+</PRE>
+        
+    Examples:
+<PRE>
+    (foldr cons '() lis)		; Copy LIS.
+
+    ;; Filter the even numbers out of LIS.
+    (foldr (lambda (x l) (if (even? x) (cons x l) l)) '() lis))
+</PRE>
+
+    If N list arguments are provided, then the KONS function must take
+    N+1 parameters: one element from each list, and the "seed" or fold
+    state, which is initially KNIL. The fold operation terminates when
+    the shortest list runs out of values:
+<PRE>
+    (foldr list* '() '(a b c) '(1 2 3 4 5)) =&gt; (a 1 b 2 c 3)
+</PRE>
+
+<DT><PRE>
+pair-foldl kons knil list1 list2 ... -&gt; value
+</PRE><DD>
+    Analogous to FOLDL, but KONS is applied to successive sublists of the 
+    lists, rather than successive elements -- that is, KONS is applied to the
+    pairs making up the lists, giving this (tail) recursion:
+<PRE>
+    (pair-foldl kons knil lis) = (let ((tail (cdr lis)))
+                                   (pair-foldl kons (kons lis knil) tail))
+</PRE>
+    The KONS function may reliably apply SET-CDR! to the pairs it is given
+    without altering the sequence of execution.
+<p>
+    Example:
+<PRE>
+      ;;; Destructively reverse a list.
+      (pair-foldl (lambda (pair tail) (set-cdr! pair tail) pair) '() lis))
+</PRE>
+
+    
+<DT><PRE>
+pair-foldr kons knil list1 list2 ... -&gt; value
+</PRE><DD>
+    Holds the same relationship with FOLDR that PAIR-FOLDL holds with FOLDL.
+    Obeys the recursion
+<PRE>
+    (pair-foldr kons knil lis) = (kons lis (pair-foldr kons knil (cdr lis)))
+</PRE>
+    
+    Example:
+<PRE>
+    (pair-foldr cons '() '(a b c)) =&gt; ((a b c) (b c) (c))
+</PRE>
+
+<DT><PRE>
+reducel f rzero list ... -&gt; value
+</PRE><DD>
+    REDUCEL is a variant of FOLDL. 
+<p>
+    RZERO should be a "right zero" of the procedure F -- that is, for any
+    value X acceptable to F,
+<PRE>
+    (f x rzero) = x
+</PRE>
+    
+    REDUCEL has the following definition:
+<UL>
+	If LIS = (),  return LZERO.<BR>
+	If LIS = (x), return X.<BR>
+	Otherwise,    return (foldl f (car x) (cdr x)).
+</UL>
+    Note that RZERO is used *only* in the empty-list case.
+    You typically use REDUCEL when applying F is expensive and you'd
+    like to avoid the extra application incurred when FOLDL applies F
+    to the head of LIS and the zero -- for example, if F involves searching a
+    file directory or performing a database query, this can be significant. In
+    general, however, FOLDL is useful in many contexts where REDUCEL is not
+    (consider the examples given in the FOLDL definition -- only one of the
+    five folds uses a function with a right zero. The other four may not be
+    performed with REDUCEL).
+<p>
+    Note: MIT Scheme flips F's arg order for its REDUCE-LEFT and FOLD-LEFT. 
+    This is a fairly isolated departure from the standard definition of FOLDL
+    used in the rest of the (Haskell, ML, Scheme, etc.) FP community. (The
+    MIT Scheme implementors had good reasons for choosing the inverted
+    argument order, but I do not find them compelling enough to warrant 
+    departing from the simple, standard definitions.)
+
+
+<DT><PRE>
+reducer f rzero lis -&gt; value
+</PRE><DD>
+    REDUCER is the fold-right variant of REDUCEL.
+    
+<DT><PRE>
+append-map  f list1 list2 ... -&gt; list
+append-map! f list1 list2 ... -&gt; list
+</PRE><DD>
+    Map F over the elements of the lists, just as in the MAP function.
+    However, the results of the applications are appended together to
+    make the final result. APPEND-MAP uses APPEND to append the results
+    together; APPEND-MAP! uses APPEND!.
+<p>
+    The dynamic order in which the various applications of F are made is
+    not specified.
+<p>
+    Example:
+<PRE>
+    (append-map! (lambda (x) (list x (- x))) '(1 3 8))
+	   =&gt; (1 -1 3 -3 8 -8)
+</PRE>
+
+<DT><PRE>
+map! f list1 list2 ... -&gt; list
+</PRE><DD>
+    Linear-update variant of MAP -- MAP! is allowed, but not required, to 
+    alter the cons cells of LIST1 to construct the result list.
+<p>
+    The dynamic order in which the various applications of F are made is
+    not specified.
+    
+<DT><PRE>
+map-in-order f list1 list2 ... -&gt; list
+</PRE><DD>
+    A variant of the MAP procedure that guarantees to apply F across
+    the elements of the LISTi arguments in a left-to-right order. This
+    is useful for mapping procedures that both have side effects and
+    return useful values.
+
+<DT><PRE>
+pair-for-each f list1 list2 ... -&gt; unspecific
+</PRE><DD>
+    Like FOR-EACH, but F is applied to successive sublists of the argument
+    lists. That is, F is applied to the cons cells of the lists, rather
+    than the lists' elements. These applications occur in left-to-right
+    order.
+
+<PRE>
+    (pair-for-each (lambda (pair) (display pair) (newline)) '(a b c))
+	==&gt;
+    (a b c)
+    (b c)
+    (c)
+</PRE>
+
+<DT><PRE>
+filter-map f list1 list2 ... -&gt; list
+</PRE><DD>
+    Like MAP, but only true values are saved.
+<PRE>
+    (filter-map (lambda (x) (and (number? x) (* x x))) '(a 1 b 3 c 7))
+	    =&gt; (1 9 49)
+</PRE>
+    The dynamic order in which the various applications of F are made is
+    not specified.
+
+
+</DL><H3>Filtering &amp; partitioning    </H3><DL>
+
+
+<DT><PRE>
+filter pred list -&gt; list
+</PRE><DD>
+    Return all the elements of LIST that satisfy predicate PRED.
+    The list is not disordered -- elements that appear in the result list
+    occur in the same order as they occur in the argument list.
+    The returned list may share a common tail with the argument list.
+    The dynamic order in which the various applications of PRED are made is
+    not specified.
+    
+<PRE>
+    (filter even? '(0 7 8 8 43 -4)) =&gt; (0 8 8 -4)
+</PRE>
+
+<DT><PRE>
+partition pred list -&gt; [list list]
+</PRE><DD>
+    Partitions the elements of LIST with predicate PRED, and returns two
+    values -- the list of in-elements and the list of out-elements.
+    The list is not disordered -- elements occur in the result lists
+    in the same order as they occur in the argument list.
+    The dynamic order in which the various applications of PRED are made is
+    not specified. One of the returned lists may share a common tail with the
+    argument list.
+
+<PRE>
+    (partition symbol? '(one 2 3 four five 6))
+	=&gt; (one four five)
+       (2 3 6)
+</PRE>
+
+<DT><PRE>
+remove pred list -&gt; list
+</PRE><DD>
+    Returns LIST without the elements that satisfy predicate PRED:
+    (lambda (pred list) (filter (lambda (x) (not (pred x))) list))
+    The list is not disordered -- elements that appear in the result list
+    occur in the same order as they occur in the argument list.
+    The returned list may share a common tail with the argument list.
+    The dynamic order in which the various applications of PRED are made is 
+    not specified.
+    
+<PRE>
+    (remove even? '(0 7 8 8 43 -4)) =&gt; (7 43)
+</PRE>
+
+<DT><PRE>
+filter!    pred list -&gt; list
+partition! pred list -&gt; [list list]
+remove!    pred list -&gt; list
+</PRE><DD>
+    Linear-update variants of FIND, PARTITION and REMOVE.
+    These procedures are allowed, but not required, to alter the cons cells
+    in the argument list to construct the result lists.
+
+    
+</DL><H3>Searching</H3><DL>
+
+
+<DT><PRE>
+find pred list -&gt; value
+</PRE><DD>
+    Return the first element of LIST that satisfies predicate PRED;
+    false if no element does. The dynamic order in which the various 
+    applications of PRED are made is not specified. 
+
+<PRE>
+    (find even? '(3 1 4 1 5 9)) =&gt; 4
+</PRE>
+
+    Note that FIND has an ambiguity in its lookup semantics -- if FIND
+    returns <CODE>#f</CODE>, you cannot tell (in general) if it found a <CODE>#f</CODE> element
+    that satisfied PRED, or if it did not find any element at all. In
+    many situations, this ambiguity cannot arise -- either the list being
+    searched is known not to contain any <CODE>#f</CODE> elements, or the list is
+    guaranteed to have an element satisfying PRED. However, in cases
+    where this ambiguity can arise, you should use FIND-TAIL instead of
+    FIND -- FIND-TAIL has no such ambiguity:
+<PRE>
+    (cond ((find-tail pred lis) =&gt;
+           (lambda (pair) ...)) ; Handle (CAR PAIR)
+	  (else ...)) ; Search failed.
+</PRE>
+
+<DT><PRE>
+find-tail pred list -&gt; pair or false
+</PRE><DD>
+    Return the first pair of list whose car satisfies PRED. If no pair does,
+    return false. The dynamic order in which the various applications of 
+    PRED are made is not specified. 
+<p>
+    FIND-TAIL can be viewed as a general-predicate variant of the MEMBER
+    function.
+<p>
+    Examples: 
+<PRE>
+    (find-tail even? '(3 1 37 -8 -5 0 0))
+	    =&gt; (-8 -5 0 0)
+
+    (find-tail even? '(3 1 37 -5))
+            =&gt; #f
+
+    ;; MEMBER X LIS:
+    (find-tail (lambda (elt) (equal? elt x)) lis)
+</PRE>
+
+<DT><PRE>
+any pred list1 list2 ... -&gt; value
+</PRE><DD>
+    Applies the predicate across the lists, returning true if the predicate
+    returns true on any application.
+<p>
+    If there are N list arguments LIST1 ... LISTn, then PRED must be a
+    function taking N arguments and returning a boolean result.
+<p>
+    ANY applies PRED to the first elements of the LISTi parameters.
+    If this application returns a true value, ANY immediately returns
+    that value. Otherwise, it iterates, applying PRED to the second
+    elements of the LISTi parameters, then the third, and so forth.
+    The iteration stops when one of the lists runs out of values; in
+    this case, ANY returns <CODE>#f</CODE>.
+<p>
+    ANY's application of PRED the the last element of LIST is a tail call.
+<p>
+    Note the difference between FIND and ANY -- FIND returns the element
+    that satisfied the predicate; ANY returns the true value that the
+    predicate produced.
+<p>
+    Like EVERY, ANY's name does not end with a question mark -- this is to
+    indicate that it does not return a simple boolean (<CODE>#t</CODE> or <CODE>#f</CODE>), but a
+    general value.
+
+<PRE>
+    (any integer? '(a 3 b 2.7))   =&gt; #t
+    (any integer? '(a 3.1 b 2.7)) =&gt; #f
+    (any &lt; '(3 1 4 1 5)
+           '(2 7 1 8 2)) =&gt; #t
+</PRE>
+
+<DT><PRE>
+every pred list1 list2 ... -&gt; value
+</PRE><DD>
+    Applies the predicate across the lists, returning true if the predicate
+    returns true on every application.
+<p>
+    If there are N list arguments LIST1 ... LISTn, then PRED must be a
+    function taking N arguments and returning a boolean result.
+<p>
+    EVERY applies PRED to the first elements of the LISTi parameters.
+    If this application returns false, EVERY immediately returns false.
+    Otherwise, it iterates, applying PRED to the second elements of the
+    LISTi parameters, then the third, and so forth. The iteration stops
+    when one of the lists runs out of values; in this case, EVERY returns
+    the true value produced by its final application of PRED. The application
+    of EVERY to the last elements of the LISTi lists is a tail call.
+<p>
+    If one of the LISTi has no elements, EVERY returns <CODE>#t</CODE>.
+<p>
+    Like ANY, EVERY's name does not end with a question mark -- this is to
+    indicate that it does not return a simple boolean (<CODE>#t</CODE> or <CODE>#f</CODE>), but a
+    general value.
+
+<DT><PRE>
+list-index pred list1 list2 ... -&gt; value
+</PRE><DD>
+    Return the index of the leftmost element that satisfies PRED.
+<p>
+    Applies the predicate across the lists, returning the index of the
+    list position that satisfies PRED.
+<p>
+    If there are N list arguments LIST1 ... LISTn, then PRED must be a
+    function taking N arguments and returning a boolean result.
+<p>
+    LIST-INDEX applies PRED to the first elements of the LISTi parameters.
+    If this application returns true, LIST-INDEX immediately returns zero.
+    Otherwise, it iterates, applying PRED to the second elements of the
+    LISTi parameters, then the third, and so forth. When it finds a tuple of
+    list elements that cause PRED to return true, it stops and returns the
+    zero-based index of that position in the lists.
+<p>
+    The iteration stops when one of the lists runs out of values; in this
+    case, LIST-INDEX returns <CODE>#f</CODE>.
+
+<PRE>
+    (list-index even? '(3 1 4 1 5 9)) =&gt; 2
+    (list-index &lt; '(3 1 4 1 5 9 2 5 6) '(2 7 1 8 2)) =&gt; 1
+    (list-index = '(3 1 4 1 5 9 2 5 6) '(2 7 1 8 2)) =&gt; #f
+</PRE>
+
+</DL><H3>Deletion</H3><DL>
+
+
+<DT><PRE>
+del  = x list -&gt; list
+delq   x list -&gt; list
+delv   x list -&gt; list
+delete x list -&gt; list
+</PRE><DD>
+    DEL uses the comparison function = to find all elements of LIST that
+    are equal to X, and deletes them from LIST. The dynamic order in which
+    the various applications of = are made is not specified. 
+    DELQ   uses EQ?    to compare elements.
+    DELV   uses EQV?   to compare elements.
+    DELETE uses EQUAL? to compare elements.
+    The list is not disordered -- elements that appear in the result list
+    occur in the same order as they occur in the argument list.
+    The result may share a common tail with the argument list.
+<p>
+    Note that fully general element deletion can be performed with the REMOVE
+    and REMOVE! procedures, e.g.:
+<PRE>
+    ;; Delete all the even elements from LIS:
+    (remove even? lis)
+</PRE>
+
+<DT><PRE>
+del!  = object list -&gt; list
+delq!   object list -&gt; list
+delv!   object list -&gt; list
+delete! object list -&gt; list
+</PRE><DD>
+    Linear-update variants of DEL, DELQ, DELV and DELETE.
+    These procedures are allowed, but not required, to alter the cons cells in
+    their argument list to construct the result.    
+
+<DT><PRE>
+del-duplicates = list -&gt; list
+delq-duplicates   list -&gt; list
+delv-duplicates   list -&gt; list
+delete-duplicates list -&gt; list
+</PRE><DD>
+    These procedures remove duplicate elements from the list argument.
+    If there are multiple equal elements in the argument list, the result list
+    only contains the first or leftmost of these elements in the result.
+    The order of these surviving elements is the same as in the original
+    list -- these procedures do not disorder the list (hence it is useful
+    for "cleaning up" association lists).
+
+    The procedure used to compare elements varies among the different
+    procedures. DELQ-DUPLICATES uses EQ?; DELV-DUPLICATES uses EQV?; 
+    DELETE-DUPLICATES uses EQUAL?; DEL-DUPLICATES uses the comparison
+    procedure provided as its first parameter.
+
+    Implementations of these procedures are allowed to share common tails
+    between argument and result lists -- for example, if the list argument
+    contains only unique elements, these procedures may simply return exactly
+    this list.
+
+    Be aware that these procedures run in time O(n^2) for N-element lists.
+    Uniquifying long lists can be accomplished in O(n lg n) time by sorting
+    the list to bring equal elements together, then using a linear-time
+    algorithm to remove equal elements.
+
+<PRE>
+    (delq-duplicates '(a b a c a b c z)) =&gt; (a b c z)
+
+    ;; Clean up an alist:
+    (del-duplicates (lambda (x y) (eq? (car x) (car y)))
+		    '((a . 3) (b . 7) (a . 9) (c . 1)))
+        =&gt; ((a . 3) (b . 7) (c . 1))
+</PRE>
+
+<DT><PRE>
+del-duplicates! = list -&gt; list
+delq-duplicates!   list -&gt; list
+delv-duplicates!   list -&gt; list
+delete-duplicates! list -&gt; list
+</PRE><DD>
+    Linear-update variants of the above procedures.
+
+</DL><H3>Searching &amp; association lists</H3><DL>
+
+
+<DT><PRE>
+mem = x list -&gt; list
+ass = key alist -&gt; entry
+</PRE><DD>
+    These procedures are variants of MEMBER and ASSOC that allow
+    the client to pass in the equality procedure = used to compare
+    keys. The dynamic order in which the various applications of =
+    are made is not specified. 
+
+    Note that fully general list and alist searching may be performed with
+    the FIND-TAIL and FIND procedures, e.g.
+<PRE>
+    ;; Look up the first association in ALIST with an even key:
+    (find (lambda (a) (even? (car a))) alist)
+</PRE>
+
+<DT><PRE>
+acons key datum alist -&gt; alist
+</PRE><DD>
+<PRE>
+    (lambda (k d a) (cons (cons k d) a))
+</PRE>
+    Cons a new alist entry mapping KEY -&gt; DATUM onto ALIST.
+
+<DT><PRE>
+alist-copy alist -&gt; alist
+</PRE><DD>
+    Make a fresh copy of ALIST. This means copying each pair that
+    forms an association as well as the spine of the list, i.e.
+    (lambda (a) (map (lambda (elt) (cons (car elt) (cdr elt))) a))
+
+<DT><PRE>
+alist-delete = key alist -&gt; alist
+del-ass = key alist -&gt; alist
+del-assq  key alist -&gt; alist
+del-assv  key alist -&gt; alist
+del-assoc key alist -&gt; alist
+</PRE><DD>
+    ALIST-DELETE and DEL-ASS are synonyms. The procedure deletes all
+    associations from ALIST with the given KEY, using key-comparison
+    procedure =. The dynamic order in which the various applications 
+    of = are made is not specified. 
+
+<UL>
+    DEL-ASSQ  uses EQ?    to compare elements.<BR>
+    DEL-ASSV  uses EQV?   to compare elements.<BR>
+    DEL-ASSOC uses EQUAL? to compare elements.
+</UL>
+
+    Return values may share common tails with the ALIST argument.
+    The alist is not disordered -- elements that appear in the result alist
+    occur in the same order as they occur in the argument alist.
+
+    
+<DT><PRE>
+alist-delete! = x alist -&gt; alist
+del-ass! = x alist -&gt; alist
+del-assq!  x alist -&gt; alist
+del-assv!  x alist -&gt; alist
+del-assoc! x alist -&gt; alist
+</PRE><DD>
+    These are linear-update variants. They are allowed, but not required,
+    to alter cons cells from the ALIST parameter to construct the return value.
+
+</DL><HL><H3>Changes</H3>
+
+<H4>From 98/10/16 netnews-posted version</H4>
+These changes are due to comments I received from the initial posting:
+<UL>
+<LI>Changed name of NTH back to R5RS name, LIST-REF.
+    The index returned is not ordinal (1-based) as the name "NTH" would lead 
+    you to believe, but cardinal (0-based), as is consistent with the other
+    VECTOR-INDEX, STRING-INDEX procedures. Brian Harvey pointed out this
+    problem.
+
+<LI>Added CIRCULAR-LIST, LIST-INDEX, ZIP, UNZIP, MAP-IN-ORDER
+    .IOTA and IOTA. generalise the many requests for an iota function.
+    MAP-IN-ORDER as requested by Maciej Stachowiak.
+    I think CIRCULAR-LIST is revolting, but it is in by popular demand.
+
+<LI>Removed terminal ? from ANY? and EVERY? 
+    As requested by Kelsey.
+
+<LI>Made ANY, EVERY, FOLDL, FOLDR, PAIR-FOLDL, PAIR-FOLDR n-ary.
+    Many requests for this, some from Rice.
+
+<LI>Added right-duplicate deletion procedures (DELQ-DUPLICATES, et al.)
+    (As requested by Phil Bewig.)
+</UL>
+
+Current total: 89 procedures (plus R5RS imports)
+
+
+</UL><H1>Implementation</H1><UL>
+
+<A HREF=srfi-1-reference.scm>Source for the reference implementation.</A>
+
+</UL><H1>Copyright</H1><UL>
+Copyright (C) Olin Shivers (1998). All Rights Reserved. 
+<p>
+This document and translations of it may be copied and furnished to
+others, and derivative works that comment on or otherwise explain it
+or assist in its implmentation may be prepared, copied, published and
+distributed, in whole or in part, without restriction of any kind,
+provided that the above copyright notice and this paragraph are
+included on all such copies and derivative works.  However, this
+document itself may not be modified in any way, such as by removing
+the copyright notice or references to the Scheme Request For
+Implementation process or editors, except as needed for the purpose of
+developing SRFIs in which case the procedures for copyrights defined
+in the SRFI process must be followed, or as required to translate it
+into languages other than English.
+<p>
+The limited permissions granted above are perpetual and will not be
+revoked by the authors or their successors or assigns.
+<p>
+This document and the information contained herein is provided on an
+"AS IS" basis and THE AUTHOR AND THE SRFI EDITORS DISCLAIM ALL
+WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY
+WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY
+RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
+PARTICULAR PURPOSE.
+</UL>
+    <hr>
+    <address>Editor: <a href="mailto:srfi-editors@schemers.org">Dave Mason</a></address>
+<!-- Created: Tue Sep 29 19:20:08 EDT 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Dec 24 18:59:15 EST 1998
+<!-- hhmts end -->
+  </body>
+</html>
