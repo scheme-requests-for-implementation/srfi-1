@@ -274,11 +274,11 @@
   (let-optionals maybe-start+step ((start 0) (step 1))
     (check-arg number? start iota)
     (check-arg number? step iota)
-    (let ((last-val (+ start (* (- count 1) step))))
-      (do ((count count (- count 1))
-	   (val last-val (- val step))
-	   (ans '() (cons val ans)))
-	  ((<= count 0)  ans)))))
+    (let loop ((n 0) (r '()))
+      (if (= n count)
+	  (reverse r)
+	  (loop (+ 1 n)
+		(cons (+ start (* n step)) r))))))
 	  
 ;;; I thought these were lovely, but the public at large did not share my
 ;;; enthusiasm...
