@@ -2405,7 +2405,9 @@ to alter the argument list to produce the result.
     returns true on any application.
 <p>
     If there are <var>n</var> list arguments <var>clist<sub>1</sub></var> ... <var>clist<sub>n</sub></var>, then <var>pred</var> must be a
-    procedure taking <var>n</var> arguments and returning a boolean result.
+    procedure taking <var>n</var> arguments
+    and returning a single value, interpreted as a boolean (that is,
+    <code>#f</code> means false, and any other value means true).
 <p>
     <code>any</code> applies <var>pred</var> to the first elements of the <var>clist<sub>i</sub></var> parameters.
     If this application returns a true value, <code>any</code> immediately returns
@@ -2443,7 +2445,9 @@ to alter the argument list to produce the result.
     returns true on every application.
 <p>
     If there are <var>n</var> list arguments <var>clist<sub>1</sub></var> ... <var>clist<sub>n</sub></var>, then <var>pred</var> must be a
-    procedure taking <var>n</var> arguments and returning a boolean result.
+    procedure taking <var>n</var> arguments
+    and returning a single value, interpreted as a boolean (that is,
+    <code>#f</code> means false, and any other value means true).
 <p>
     <code>every</code> applies <var>pred</var> to the first elements of the <var>clist<sub>i</sub></var> parameters.
     If this application returns false, <code>every</code> immediately returns false.
@@ -2471,7 +2475,9 @@ to alter the argument list to produce the result.
     Return the index of the leftmost element that satisfies <var>pred</var>.
 <p>
     If there are <var>n</var> list arguments <var>clist<sub>1</sub></var> ... <var>clist<sub>n</sub></var>, then <var>pred</var> must be a
-    function taking <var>n</var> arguments and returning a boolean result.
+    function taking <var>n</var> arguments
+    and returning a single value, interpreted as a boolean (that is,
+    <code>#f</code> means false, and any other value means true).
 <p>
     <code>list-index</code> applies <var>pred</var> to the first elements of the <var>clist<sub>i</sub></var> parameters.
     If this application returns true, <code>list-index</code> immediately returns zero.
