@@ -162,7 +162,11 @@ You can access the discussion via <A HREF=mail-archive/maillist.html>the archive
     <LI>Draft: 1998/12/22-1999/03/09</LI>
     <LI>Revised: several times</LI>
     <LI>Final: 1999/10/09</LI>
-    <LI>Revised to fix errata: 2016/8/27</LI>
+    <LI>Revised to fix errata: 2016/8/27
+      <ul>
+	<li>2016/8/27 (Clarify Booleans.)</li>
+	<li>2018/10/8 (Remove extra parenthesis.)</li>
+</ul></LI>
 </UL>
 
 <!--========================================================================-->
@@ -1654,7 +1658,7 @@ partition the entire universe of Scheme values.
     Example:
 <pre class=code-example>
 ;;; Destructively reverse a list.
-(pair-fold (lambda (pair tail) (set-cdr! pair tail) pair) '() lis))
+(pair-fold (lambda (pair tail) (set-cdr! pair tail) pair) '() lis)
 </pre>
 
     At least one of the list arguments must be finite.
