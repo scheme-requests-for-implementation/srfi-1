@@ -1,4 +1,4 @@
-;;; SRFI-1 list-processing library 			-*- Scheme -*-
+;;; SRFI-1 list-processing library			-*- Scheme -*-
 ;;; Reference implementation
 ;;;
 ;;; Copyright (c) 1998, 1999 by Olin Shivers. You may do as you please with
@@ -1465,7 +1465,7 @@
   (check-arg procedure? = lset-union)
   (reduce (lambda (lis ans)		; Compute ANS + LIS.
 	    (cond ((null? lis) ans)	; Don't copy any lists
-		  ((null? ans) lis) 	; if we don't have to.
+		  ((null? ans) lis)	; if we don't have to.
 		  ((eq? lis ans) ans)
 		  (else
 		   (fold (lambda (elt ans) (if (any (lambda (x) (= x elt)) ans)
@@ -1478,7 +1478,7 @@
   (check-arg procedure? = lset-union!)
   (reduce (lambda (lis ans)		; Splice new elts of LIS onto the front of ANS.
 	    (cond ((null? lis) ans)	; Don't copy any lists
-		  ((null? ans) lis) 	; if we don't have to.
+		  ((null? ans) lis)	; if we don't have to.
 		  ((eq? lis ans) ans)
 		  (else
 		   (pair-fold (lambda (pair ans)
