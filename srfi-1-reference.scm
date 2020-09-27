@@ -1450,9 +1450,9 @@
         (or (not (pair? rest))
             (let ((s2   (car rest))
                   (rest (cdr rest)))
-              (and (or (eq? s1 s2)             ; Fast path
+              (and (or (eq? s1 s2)            ; Fast path
                        (and (%lset2<= = s1 s2) ; Real test
-                            (%lset2<= (flip =) s2 s1))
+                            (%lset2<= (flip =) s2 s1)))
                    (lp s2 rest)))))))
 
 (define (lset-adjoin = lis . elts)
