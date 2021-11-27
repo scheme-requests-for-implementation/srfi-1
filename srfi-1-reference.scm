@@ -44,7 +44,7 @@
 ;;; delete-duplicates delete-duplicates!
 ;;; alist-delete alist-delete!
 ;;; reverse!
-;;; lset<= lset= lset-adjoin
+;;; lset<= lset= lset-adjoin lset-adjoin!
 ;;; lset-union  lset-intersection  lset-difference  lset-xor  lset-diff+intersection
 ;;; lset-union! lset-intersection! lset-difference! lset-xor! lset-diff+intersection!
 ;;;
@@ -1460,6 +1460,15 @@
   (fold (lambda (elt ans) (if (member elt ans =) ans (cons elt ans)))
 	lis elts))
 
+(define (lset-adjoin! = lis . elts)
+  (check-arg procedure? = lset-adjoin!)
+  (pair-fold (lambda (pair ans)
+               (let ((elt (car pair)))
+                 (if (member elt ans =)
+                     ans
+                     (begin (set-cdr! pair ans)
+                            pair))))
+	     lis elts))
 
 (define (lset-union = . lists)
   (check-arg procedure? = lset-union)
