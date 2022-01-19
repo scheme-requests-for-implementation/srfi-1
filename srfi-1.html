@@ -15,7 +15,8 @@
     <meta name="keywords" content="Scheme, programming language, list processing, SRFI">
     <link rev=made href="mailto:shivers@ai.mit.edu">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="/srfi.css" type="text/css" />
+    <link rel="stylesheet" href="https://srfi.schemers.org/srfi.css" type="text/css" />
+    <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png">
     <title>SRFI 1: List Library</title>
 
     <!-- Should have a media=all to get, for example, printing to work.
@@ -137,17 +138,12 @@
 <body>
 
 <!--========================================================================-->
-<H1>Title</H1><div class=title-text>
-List Library
-</div>
+<h1><a href="https://srfi.schemers.org/"><img class="srfi-logo" src="https://srfi.schemers.org/srfi-logo.svg" alt="SRFI surfboard logo" /></a>1: List Library</h1>
+
+<p>by Olin Shivers</p>
 
 <!--========================================================================-->
-<H1>Author</H1>
-
-Olin Shivers
-
-<!--========================================================================-->
-<H1>Status</H1>
+<h2 id="status">Status</h2>
 
 <p>This SRFI is currently in <em>final</em> status.  Here is <a href="https://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi+minus+1  +at+srfi+dotschemers+dot+org">srfi-1  @<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="https://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="https://srfi-email.schemers.org/srfi-1  ">archive</a>.</p>
 <UL>
@@ -166,7 +162,7 @@ Olin Shivers
 </UL>
 
 <!--========================================================================-->
-<h1>Table of contents</H1>
+<h2>Table of contents</h2>
 
 <!-- A bug in netscape (?) keeps the first link in this UL from being active.
 ==== So the Abstract link be dead. 99/8/22 -Olin
@@ -203,7 +199,7 @@ Olin Shivers
 
 
 <!--========================================================================-->
-<h1><a name="Abstract">Abstract</a></H1>
+<h2 id="Abstract">Abstract</h2>
 <p>
 <abbr title="Revised^5 Report on Scheme"><a href="#R5RS">R5RS</a></abbr> Scheme has an impoverished set of list-processing utilities, which is a
 problem for authors of portable code.  This <abbr title="Scheme Request for Implementation">SRFI</abbr> proposes a coherent and
@@ -216,7 +212,7 @@ reference implementation of the spec. The reference implementation is
 </ul>
 
 <!--========================================================================-->
-<h1><a name="Rationale">Rationale</a></h1>
+<h2 id="Rationale">Rationale</h2>
 <p>
 The set of basic list and pair operations provided by R4RS/<abbr title="Revised^5 Report on Scheme"><a href="#R5RS">R5RS</a></abbr> Scheme is far
 from satisfactory. Because this set is so small and basic, most
@@ -288,7 +284,7 @@ library and get good results with it.
 
 
 <!--========================================================================-->
-<h1><a name="ProcedureIndex">Procedure Index</a></h1>
+<h2 id="ProcedureIndex">Procedure Index</h2>
 <p>
 Here is a short list of the procedures provided by the list-lib package.
 <a href="#R5RS">R5RS</a></abbr> procedures are shown in
@@ -442,7 +438,7 @@ this library:
 </div>
 
 <!--========================================================================-->
-<h1><a name="GeneralDiscussion">General discussion</a></h1>
+<h2 id="GeneralDiscussion">General discussion</h2>
 <p>
 
 A set of general criteria guided the design of this library.
@@ -682,7 +678,7 @@ They should have their own <abbr title="Scheme Request for Implementation">SRFI<
 
 
 <!--========================================================================-->
-<h1><a name="TheProcedures">The procedures</a></h1>
+<h2 id="TheProcedures">The procedures</h2>
 <p>
 
 In a Scheme system that has a module or package system, these procedures
@@ -3153,7 +3149,7 @@ side-effect operations on pairs.
 </dl>
 
 <!--========================================================================-->
-<h1><a name="Acknowledgements">Acknowledgements</a></h1>
+<h2 id="Acknowledgements">Acknowledgements</h2>
 <p>
 The design of this library benefited greatly from the feedback provided during
 the <abbr title="Scheme Request for Implementation">SRFI</abbr> discussion phase. Among those contributing thoughtful commentary and
@@ -3177,7 +3173,7 @@ results, of course.
 
 
 <!--========================================================================-->
-<h1><a name="ReferencesLinks">References &amp; links</a></h1>
+<h2 id="ReferencesLinks">References &amp; links</h2>
 <p>
 
 <dl>
@@ -3225,7 +3221,7 @@ the ANSI spec for Common Lisp:
 
 
 <!--========================================================================-->
-<h1><a name="Copyright">Copyright</a></h1>
+<h2 id="copyright">Copyright</h2>
 <p>
 
 Certain portions of this document -- the specific, marked segments of text
