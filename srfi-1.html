@@ -9,10 +9,10 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
-    <meta name="keywords" content="Scheme, programming language, list processing, SRFI" />
-    <link rev="made" href="mailto:shivers@ai.mit.edu" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="https://srfi.schemers.org/srfi.css" type="text/css" />
+    <meta content="Scheme, programming language, list processing, SRFI" name="keywords" />
+    <link href="mailto:shivers@ai.mit.edu" rev="made" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link href="https://srfi.schemers.org/srfi.css" rel="stylesheet" type="text/css" />
     <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png" />
     <title>SRFI 1: List Library</title>
 
@@ -104,7 +104,7 @@
 	   /*]]>*/
     </style>
 
-    <style type="text/css" media="all">
+    <style media="all" type="text/css">
 	   /*<![CDATA[*/
 	   /* Nastiness: Here, I'm using a bug to work around a bug.
 	   ** Netscape rendering bugs mean you need bogus <dt> and <dd>
@@ -139,14 +139,14 @@
 <body>
 
 <!--========================================================================-->
-<h1><a href="https://srfi.schemers.org/"><img class="srfi-logo" src="https://srfi.schemers.org/srfi-logo.svg" alt="SRFI surfboard logo" /></a>1: List Library</h1>
+<h1><a href="https://srfi.schemers.org/"><img alt="SRFI surfboard logo" class="srfi-logo" src="https://srfi.schemers.org/srfi-logo.svg" /></a>1: List Library</h1>
 
 <p>by Olin Shivers</p>
 
 <!--========================================================================-->
 <h2 id="status">Status</h2>
 
-<p>This SRFI is currently in <em>final</em> status.  Here is <a href="https://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi+minus+1  +at+srfi+dotschemers+dot+org">srfi-1  @<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="https://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="https://srfi-email.schemers.org/srfi-1  ">archive</a>.</p>
+<p>This SRFI is currently in <em>final</em> status.  Here is <a href="https://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi+minus+1%20%20+at+srfi+dotschemers+dot+org">srfi-1  @<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="https://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="https://srfi-email.schemers.org/srfi-1">archive</a>.</p>
 <ul>
     <li>Received: 1998-11-08</li>
     <li>Draft: 1998-12-22--1999-03-09</li>
@@ -157,7 +157,7 @@
 	<li>2016-08-27 (Clarify Booleans.)</li>
 	<li>2018-10-08 (Remove extra parenthesis.)</li>
 	<li>2019-10-25 (Fix broken links.)</li>
-	<li>2020-06-02 (Add <a href="#lset=-element-equality-order">note</a>
+	<li>2020-06-02 (Add <a href="#lset%3D-element-equality-order">note</a>
 	  about order of arguments to <code>lset=</code>.)</li>
       </ul>
     </li>
@@ -319,7 +319,7 @@ extended <a href="#R5RS">R5RS</a>
 <span class="r5rs-proc"><a href="#pair-p">pair?</a> <a href="#null-p">null?</a></span>
 <a href="#proper-list-p">proper-list?</a> <a href="#circular-list-p">circular-list?</a> <a href="#dotted-list-p">dotted-list?</a>
 <a href="#not-pair-p">not-pair?</a> <a href="#null-list-p">null-list?</a>
-<a href="#list=">list=</a>
+<a href="#list%3D">list=</a>
 </pre>
 
 </dd><dt class="proc-index"> Selectors
@@ -327,7 +327,7 @@ extended <a href="#R5RS">R5RS</a>
 <pre class="proc-index">
 <span class="r5rs-proc"><a href="#car">car</a> <a href="#cdr">cdr</a> ... <a href="#cddadr">cddadr</a> <a href="#cddddr">cddddr</a> <a href="#list-ref">list-ref</a></span>
 <a href="#first">first</a> <a href="#second">second</a> <a href="#third">third</a> <a href="#fourth">fourth</a> <a href="#fifth">fifth</a> <a href="#sixth">sixth</a> <a href="#seventh">seventh</a> <a href="#eighth">eighth</a> <a href="#ninth">ninth</a> <a href="#tenth">tenth</a>
-<a href="#car+cdr">car+cdr</a>
+<a href="#car%2Bcdr">car+cdr</a>
 <a href="#take">take</a>       <a href="#drop">drop</a>
 <a href="#take-right">take-right</a> <a href="#drop-right">drop-right</a>
 <a href="#take!">take!</a>      <a href="#drop-right!">drop-right!</a>
@@ -338,7 +338,7 @@ extended <a href="#R5RS">R5RS</a>
 </dd><dt class="proc-index"> Miscellaneous: length, append, concatenate, reverse, zip &amp; count
 </dt><dd class="proc-index">
 <pre class="proc-index">
-<span class="r5rs-proc"><a href="#length">length</a></span> <a href="#length+">length+</a>
+<span class="r5rs-proc"><a href="#length">length</a></span> <a href="#length%2B">length+</a>
 <span class="r5rs-proc"><a href="#append">append</a></span>  <a href="#concatenate">concatenate</a>  <span class="r5rs-proc"><a href="#reverse">reverse</a></span>
 <a href="#append!">append!</a> <a href="#concatenate!">concatenate!</a> <a href="#reverse!">reverse!</a>
 <a href="#append-reverse">append-reverse</a> <a href="#append-reverse!">append-reverse!</a>
@@ -392,12 +392,12 @@ extended <a href="#R5RS">R5RS</a>
 </dd><dt class="proc-index"> Set operations on lists
 </dt><dd class="proc-index">
 <pre class="proc-index">
-<a href="#lset&lt;=">lset&lt;=</a> <a href="#lset=">lset=</a> <a href="#lset-adjoin">lset-adjoin</a>
+<a href="#lset%3C%3D">lset&lt;=</a> <a href="#lset%3D">lset=</a> <a href="#lset-adjoin">lset-adjoin</a>
 <a href="#lset-union">lset-union</a>			<a href="#lset-union!">lset-union!</a>
 <a href="#lset-intersection">lset-intersection</a>		<a href="#lset-intersection!">lset-intersection!</a>
 <a href="#lset-difference">lset-difference</a>		        <a href="#lset-difference!">lset-difference!</a>
 <a href="#lset-xor">lset-xor</a>			<a href="#lset-xor!">lset-xor!</a>
-<a href="#lset-diff+intersection">lset-diff+intersection</a>	        <a href="#lset-diff+intersection!">lset-diff+intersection!</a>
+<a href="#lset-diff%2Bintersection">lset-diff+intersection</a>	        <a href="#lset-diff%2Bintersection!">lset-diff+intersection!</a>
 </pre>
 
 </dd><dt class="proc-index"> Primitive side-effects
@@ -832,7 +832,7 @@ defined to accept such an argument.
 <!--
 ==== cons*
 ============================================================================-->
-<dt id="cons*" class="proc-def"><code class="proc-def">cons*</code><var> elt<sub>1</sub> elt<sub>2</sub> ... -&gt; object</var>
+<dt class="proc-def" id="cons*"><code class="proc-def">cons*</code><var> elt<sub>1</sub> elt<sub>2</sub> ... -&gt; object</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -856,7 +856,7 @@ defined to accept such an argument.
 <!--
 ==== make-list
 ============================================================================-->
-<dt id="make-list" class="proc-def"> <code class="proc-def">make-list</code> <var>n [fill] -&gt; list</var>
+<dt class="proc-def" id="make-list"> <code class="proc-def">make-list</code> <var>n [fill] -&gt; list</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -872,7 +872,7 @@ defined to accept such an argument.
 <!--
 ==== list-tabulate
 ============================================================================-->
-<dt id="list-tabulate" class="proc-def"><code class="proc-def">list-tabulate</code><var> n init-proc -&gt; list</var>
+<dt class="proc-def" id="list-tabulate"><code class="proc-def">list-tabulate</code><var> n init-proc -&gt; list</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -887,7 +887,7 @@ defined to accept such an argument.
 <!--
 ==== list-copy
 ============================================================================-->
-<dt id="list-copy" class="proc-def"><code class="proc-def">list-copy</code><var> flist -&gt; flist</var>
+<dt class="proc-def" id="list-copy"><code class="proc-def">list-copy</code><var> flist -&gt; flist</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -897,7 +897,7 @@ defined to accept such an argument.
 <!--
 ==== circular-list
 ============================================================================-->
-<dt id="circular-list" class="proc-def"><code class="proc-def">circular-list</code><var> elt<sub>1</sub> elt<sub>2</sub> ... -&gt; list</var>
+<dt class="proc-def" id="circular-list"><code class="proc-def">circular-list</code><var> elt<sub>1</sub> elt<sub>2</sub> ... -&gt; list</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -910,7 +910,7 @@ defined to accept such an argument.
 <!--
 ==== iota
 ============================================================================-->
-<dt id="iota" class="proc-def"><code class="proc-def">iota</code><var> count [start step] -&gt; list</var>
+<dt class="proc-def" id="iota"><code class="proc-def">iota</code><var> count [start step] -&gt; list</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -1008,7 +1008,7 @@ partition the entire universe of Scheme values.
 <!--
 ==== pair?
 ============================================================================-->
-<dt id="pair-p" class="proc-def"><code class="proc-def">pair?</code><var> object -&gt; boolean</var>
+<dt class="proc-def" id="pair-p"><code class="proc-def">pair?</code><var> object -&gt; boolean</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -1027,7 +1027,7 @@ partition the entire universe of Scheme values.
 <!--
 ==== null?
 ============================================================================-->
-<dt id="null-p" class="proc-def"><code class="proc-def">null?</code><var> object -&gt; boolean</var>
+<dt class="proc-def" id="null-p"><code class="proc-def">null?</code><var> object -&gt; boolean</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -1038,7 +1038,7 @@ partition the entire universe of Scheme values.
 <!--
 ==== null-list?
 ============================================================================-->
-<dt id="null-list-p" class="proc-def"><code class="proc-def">null-list?</code><var> list -&gt; boolean</var>
+<dt class="proc-def" id="null-list-p"><code class="proc-def">null-list?</code><var> list -&gt; boolean</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -1144,9 +1144,9 @@ partition the entire universe of Scheme values.
 <!--
 ==== car cdr
 ============================================================================-->
-<dt id="car" class="proc-def1"><code class="proc-def">car</code><var> pair -&gt; value</var>
+<dt class="proc-def1" id="car"><code class="proc-def">car</code><var> pair -&gt; value</var>
 </dt>
-<dt id="cdr" class="proc-defn"><code class="proc-def">cdr</code><var> pair -&gt; value</var>
+<dt class="proc-defn" id="cdr"><code class="proc-def">cdr</code><var> pair -&gt; value</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -1167,17 +1167,17 @@ partition the entire universe of Scheme values.
 <!--
 ==== caar cadr ... cdddar cddddr
 ============================================================================-->
-<dt id="caar" class="proc-def1"><code class="proc-def">caar</code><var> pair -&gt; value</var>
+<dt class="proc-def1" id="caar"><code class="proc-def">caar</code><var> pair -&gt; value</var>
 </dt>
-<dt id="cadr" class="proc-defi"><code class="proc-def">cadr</code><var> pair -&gt; value</var>
+<dt class="proc-defi" id="cadr"><code class="proc-def">cadr</code><var> pair -&gt; value</var>
 </dt>
 <dt class="proc-defi"><code class="proc-def">:</code>
 </dt>
-<dt id="cddadr" class="proc-defi"><code class="proc-def">cddadr</code><var> pair -&gt; value</var>
+<dt class="proc-defi" id="cddadr"><code class="proc-def">cddadr</code><var> pair -&gt; value</var>
 </dt>
-<dt id="cdddar" class="proc-defi"><code class="proc-def">cdddar</code><var> pair -&gt; value</var>
+<dt class="proc-defi" id="cdddar"><code class="proc-def">cdddar</code><var> pair -&gt; value</var>
 </dt>
-<dt id="cddddr" class="proc-defn"><code class="proc-def">cddddr</code><var> pair -&gt; value</var>
+<dt class="proc-defn" id="cddddr"><code class="proc-def">cddddr</code><var> pair -&gt; value</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -1196,7 +1196,7 @@ partition the entire universe of Scheme values.
 <!--
 ==== list-ref
 ============================================================================-->
-<dt id="list-ref" class="proc-def"><code class="proc-def">list-ref</code><var> clist i -&gt; value</var>
+<dt class="proc-def" id="list-ref"><code class="proc-def">list-ref</code><var> clist i -&gt; value</var>
 </dt>
 <dd class="proc-def">
 <p>
@@ -1626,7 +1626,7 @@ partition the entire universe of Scheme values.
 <!--
 ==== zip
 ============================================================================-->
-<dt id="zip" class="proc-def"><code class="proc-def">zip</code> <var>clist<sub>1</sub> clist<sub>2</sub> ... -&gt; list</var>
+<dt class="proc-def" id="zip"><code class="proc-def">zip</code> <var>clist<sub>1</sub> clist<sub>2</sub> ... -&gt; list</var>
 </dt>
 <dd class="proc-def">
 <pre>(lambda lists (apply map list lists))
@@ -1659,15 +1659,15 @@ partition the entire universe of Scheme values.
 ==== unzip2
 ==== unzip1
 ============================================================================-->
-<dt id="unzip1" class="proc-def1">  <code class="proc-def">unzip1</code><var> list -&gt; list</var>
+<dt class="proc-def1" id="unzip1">  <code class="proc-def">unzip1</code><var> list -&gt; list</var>
 </dt>
-<dt id="unzip2" class="proc-defi"> <code class="proc-def">unzip2</code><var> list -&gt; [list list]</var>
+<dt class="proc-defi" id="unzip2"> <code class="proc-def">unzip2</code><var> list -&gt; [list list]</var>
 </dt>
-<dt id="unzip3" class="proc-defi"> <code class="proc-def">unzip3</code><var> list -&gt; [list list list]</var>
+<dt class="proc-defi" id="unzip3"> <code class="proc-def">unzip3</code><var> list -&gt; [list list list]</var>
 </dt>
-<dt id="unzip4" class="proc-defi"> <code class="proc-def">unzip4</code><var> list -&gt; [list list list list]</var>
+<dt class="proc-defi" id="unzip4"> <code class="proc-def">unzip4</code><var> list -&gt; [list list list list]</var>
 </dt>
-<dt id="unzip5" class="proc-defn"> <code class="proc-def">unzip5</code><var> list -&gt; [list list list list list]</var>
+<dt class="proc-defn" id="unzip5"> <code class="proc-def">unzip5</code><var> list -&gt; [list list list list list]</var>
 </dt>
 <dd class="proc-def">
 <p>
