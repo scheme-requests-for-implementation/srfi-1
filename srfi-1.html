@@ -158,6 +158,7 @@
 	<li>2019-10-25 (Fix broken links.)</li>
 	<li>2020-06-02 (Add <a href="#lset%3D-element-equality-order">note</a>
 	  about order of arguments to <code>lset=</code>.)</li>
+	<li>2022-10-22 (Fixed <a href="#reduce-right">definition of <code>reduce-right</code></a>.  See <a href="https://srfi-email.schemers.org/srfi-1/msg/18561246/">discussion in archive</a>.)</li>
       </ul>
     </li>
 </ul>
@@ -1952,11 +1953,10 @@ Otherwise,    return <code>(fold <var>f</var> (car <var>list</var>) (cdr <var>li
 (reduce-right <var>f</var> <var>ridentity</var> '()) = <var>ridentity</var>
 (reduce-right <var>f</var> <var>ridentity</var> '(<var>e<sub>1</sub></var>)) = (<var>f</var> <var>e<sub>1</sub></var> <var>ridentity</var>) = <var>e<sub>1</sub></var>
 (reduce-right <var>f</var> <var>ridentity</var> '(<var>e<sub>1</sub></var> <var>e<sub>2</sub></var> ...)) =
-    (<var>f</var> <var>e<sub>1</sub></var> (reduce <var>f</var> <var>ridentity</var> (<var>e<sub>2</sub></var> ...)))
+    (fold-right <var>f</var> <var>e<sub>1</sub></var> '(<var>e<sub>2</sub></var> ...))
 </pre>
 <p>
-    ...in other words, we compute
-    <code>(fold-right <var>f</var> <var>ridentity</var> <var>list</var>)</code>.
+  ... in other words, we compute <code>(fold-right <var>f</var> <var>ridentity</var> <var>list</var>)</code>, but as with <code>reduce</code>, only use <var>ridentity</var> in the empty-list case."
 </p>
 <pre class="code-example">
 ;; Append a bunch of lists together.
