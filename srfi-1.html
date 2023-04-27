@@ -160,6 +160,7 @@
 	  about order of arguments to <code>lset=</code>.)</li>
 	<li>2022-10-22 (Fixed <a href="#reduce-right">definition of <code>reduce-right</code></a>.  See <a href="https://srfi-email.schemers.org/srfi-1/msg/18561246/">discussion in archive</a>.)</li>
 	<li>2022-11-21 (Add missing ellipsis in signature of <a href="#count"><code>count</code></a>.)</li>
+        <li>2023-04-27 (Fix return type of <a href="#circular-list"><code>circular-list</code></a>.)</li>
       </ul>
     </li>
 </ul>
@@ -898,7 +899,7 @@ defined to accept such an argument.
 <!--
 ==== circular-list
 ============================================================================-->
-<dt class="proc-def" id="circular-list"><code class="proc-def">circular-list</code><var> elt<sub>1</sub> elt<sub>2</sub> ... -&gt; list</var>
+<dt class="proc-def" id="circular-list"><code class="proc-def">circular-list</code><var> elt<sub>1</sub> elt<sub>2</sub> ... -&gt; clist</var>
 </dt>
 <dd class="proc-def">
 <p>
