@@ -1,5 +1,5 @@
 
-# SPDX-FileCopyrightText: 2024 Olin Shivers
+# SPDX-FileCopyrightText: 2024 Arthur A. Gleckler
 # SPDX-License-Identifier: MIT
 * SRFI 1: List Library
 
