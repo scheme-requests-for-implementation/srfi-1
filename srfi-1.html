@@ -166,6 +166,8 @@ SPDX-License-Identifier: MIT
 	<li>2022-10-22 (Fixed <a href="#reduce-right">definition of <code>reduce-right</code></a>.  See <a href="https://srfi-email.schemers.org/srfi-1/msg/18561246/">discussion in archive</a>.)</li>
 	<li>2022-11-21 (Add missing ellipsis in signature of <a href="#count"><code>count</code></a>.)</li>
         <li>2023-04-27 (Fix return type of <a href="#circular-list"><code>circular-list</code></a>.)</li>
+        <li>2025-09-02 (Fix <a href="#right-example">example</a>
+          of <code>drop-right</code> and <code>take-right</code>.)
       </ul>
     </li>
 </ul>
@@ -1354,7 +1356,7 @@ partition the entire universe of Scheme values.
     which can be inverted with <code>append</code>:
 </p>
 <pre class="code-example">
-(append (take <var>flist</var> <var>i</var>) (drop <var>flist</var> <var>i</var>)) = <var>flist</var>
+(append (drop-right flist <var>i</var>) (take-right flist <var>i</var>)) = <var>flist</var>
 </pre>
 <p>
     <code>take-right</code>'s return value is guaranteed to share a common tail with <var>flist</var>.
